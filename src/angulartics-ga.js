@@ -17,7 +17,6 @@ angular.module('angulartics.google.analytics', ['angulartics'])
 
   // GA already supports buffered invocations so we don't need
   // to wrap these inside angulartics.waitForVendorApi
-
   $analyticsProvider.settings.trackRelativePath = true;
   
   // Set the default settings for this module
@@ -51,8 +50,8 @@ angular.module('angulartics.google.analytics', ['angulartics'])
 
     // do nothing if there is no category (it's required by GA)
     if (!properties || !properties.category) { 
-		return; 
-	}
+  		return; 
+  	}
     // GA requires that eventValue be an integer, see:
     // https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#eventValue
     // https://github.com/luisfarzati/angulartics/issues/81
@@ -62,7 +61,6 @@ angular.module('angulartics.google.analytics', ['angulartics'])
     }
 
     if (window.ga) {
-
       var eventOptions = {
         eventCategory: properties.category || null,
         eventAction: action || null,
@@ -73,19 +71,20 @@ angular.module('angulartics.google.analytics', ['angulartics'])
 
       // add custom dimensions and metrics
       for(var idx = 1; idx<=20;idx++) {
-      if (properties['dimension' +idx.toString()]) {
-        eventOptions['dimension' +idx.toString()] = properties['dimension' +idx.toString()];
-      }
-      if (properties['metric' +idx.toString()]) {
-        eventOptions['metric' +idx.toString()] = properties['metric' +idx.toString()];
+        if (properties['dimension' +idx.toString()]) {
+          eventOptions['dimension' +idx.toString()] = properties['dimension' +idx.toString()];
+        }
+   
+        if (properties['metric' +idx.toString()]) {
+          eventOptions['metric' +idx.toString()] = properties['metric' +idx.toString()];
         }
       }
+      
       ga('send', 'event', eventOptions);
       angular.forEach($analyticsProvider.settings.ga.additionalAccountNames, function (accountName){
         ga(accountName +'.send', 'event', eventOptions);
       });
     }
-
     else if (window._gaq) {
       _gaq.push(['_trackEvent', properties.category, action, properties.label, properties.value, properties.noninteraction]);
     }
